@@ -4,6 +4,13 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        {/* Button Component */}
+        <button
+          type="button"
+          className="flex h-12 w-full items-center justify-center rounded-full bg-foreground px-5 text-base font-medium text-background transition-colors hover:bg-[#383838] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground dark:hover:bg-[#ccc] md:w-auto"
+        >
+          <span>Button Label</span>
+        </button>
         <Image
           className="dark:invert h-5 w-[100px]"
           src="/next.svg"
