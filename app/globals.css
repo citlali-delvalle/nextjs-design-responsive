@@ -1,21 +1,171 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --background: #fbfbfd;
+  --foreground: #1d1d1f;
+  --surface: #f5f5f7;
+  --muted: #6e6e73;
+  --accent: #0066cc;
+  --hairline: rgb(0 0 0 / 0.06);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-hairline: var(--hairline);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* SF Pro on Apple devices, Geist everywhere else */
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    var(--font-geist-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * Liquid Glass — Apple's translucent material from iOS / macOS 26.
+ * Layers: a soft white tint, heavy blur + saturation of whatever is behind,
+ * an inner glow, a specular rim that is brightest at the top-left and
+ * bottom-right edges (::before), and a curved top highlight (::after).
+ */
+/* In the components layer so Tailwind utilities (bg-*, rounded-*) can override */
+@layer components {
+  .glass {
+    position: relative;
+    isolation: isolate;
+    background: linear-gradient(
+      135deg,
+      rgb(255 255 255 / 0.62),
+      rgb(255 255 255 / 0.34)
+    );
+    -webkit-backdrop-filter: blur(24px) saturate(190%) brightness(1.06);
+    backdrop-filter: blur(24px) saturate(190%) brightness(1.06);
+    box-shadow:
+      inset 0 1px 1px rgb(255 255 255 / 0.9),
+      inset 0 -1px 1px rgb(255 255 255 / 0.35),
+      inset 0 0 24px rgb(255 255 255 / 0.25),
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 12px 40px -8px rgb(0 0 0 / 0.18);
+  }
+
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgb(255 255 255 / 0.95),
+      rgb(255 255 255 / 0.15) 35%,
+      rgb(255 255 255 / 0.05) 60%,
+      rgb(255 255 255 / 0.7)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 1px 1px 50% 1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.45),
+      rgb(255 255 255 / 0)
+    );
+    pointer-events: none;
+  }
+
+  /* Smaller, clearer variant for buttons and pills */
+  .glass-pill {
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(12px) saturate(180%);
+    transition:
+      transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.2s;
+  }
+
+  .glass-pill:hover {
+    transform: scale(1.04);
+  }
+
+  .glass-pill:active {
+    transform: scale(0.96);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgb(255 255 255 / 0.92);
+  }
+}
+
+/*
+ * Parallax: put .parallax on the clipping frame and .parallax-layer on an inner
+ * wrapper around the media. The layer is 20% taller than the frame and drifts
+ * from -7% to +7% while the frame crosses the viewport, so the photo moves
+ * slower than the page. Animates `translate` (not `transform`) so it composes
+ * with hover `scale-*` utilities on the media inside.
+ */
+.parallax {
+  view-timeline-name: --parallax;
+}
+
+.parallax-layer {
+  position: absolute;
+  inset: -10% 0;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .parallax-layer {
+      animation: parallax linear both;
+      animation-timeline: --parallax;
+      animation-range: cover;
+    }
+  }
+}
+
+@keyframes parallax {
+  from {
+    translate: 0 -7%;
+  }
+  to {
+    translate: 0 7%;
+  }
+}
+
+/* Apple-style fade-up as sections scroll into view */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
