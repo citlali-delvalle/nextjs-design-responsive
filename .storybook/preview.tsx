@@ -1,5 +1,8 @@
 import type { Preview } from '@storybook/nextjs-vite'
 
+// Tailwind, design tokens and the .glass / .parallax / .reveal classes
+import '../app/globals.css'
+
 const preview: Preview = {
   parameters: {
     controls: {
